@@ -1,6 +1,26 @@
 # Work Hours Tracker
 
-A simple, easy-to-use command-line application to track your working hours.
+A simple, easy-to-use application to track your working hours. Available in both **Command-Line** and **Web Interface** versions!
+
+## Choose Your Interface
+
+### 🌐 Web Interface (Recommended for Beginners)
+The easiest way to use the tracker - just open it in your web browser!
+
+```bash
+python3 work_tracker_web.py
+```
+
+Then open your browser and go to: **http://localhost:8000**
+
+### 💻 Command-Line Interface
+For those who prefer typing commands in the terminal.
+
+```bash
+python3 work_tracker.py in
+```
+
+Both versions use the same data file, so you can switch between them anytime!
 
 ## Features
 
@@ -19,12 +39,48 @@ A simple, easy-to-use command-line application to track your working hours.
 ## Installation
 
 1. Clone this repository or download the files
-2. Make the script executable (optional):
-   ```bash
-   chmod +x work_tracker.py
-   ```
+2. Make sure you have Python 3.6 or higher installed
 
-## Usage
+That's it! No external dependencies required.
+
+## Quick Start Guide (For Beginners)
+
+### Using the Web Interface (Easiest!)
+
+1. Open your terminal/command prompt
+2. Navigate to this folder:
+   ```bash
+   cd /path/to/medical-councel
+   ```
+3. Start the web server:
+   ```bash
+   python3 work_tracker_web.py
+   ```
+4. Open your web browser and go to: **http://localhost:8000**
+5. Click the buttons to track your time!
+6. Press Ctrl+C in the terminal to stop the server when done
+
+### Using the Command Line
+
+See the detailed commands below in the "Command-Line Usage" section.
+
+---
+
+## Web Interface Usage
+
+The web interface is self-explanatory with big, clickable buttons:
+
+- **Clock In** button - Start tracking your work time
+- **Clock Out** button - Stop tracking your work time
+- **Add a note** - Optional text field for notes
+- **View All Sessions** - See all your work sessions
+- **Today/Week/Month** - View summaries for different time periods
+
+The timer updates automatically every second when you're clocked in!
+
+---
+
+## Command-Line Usage
 
 ### Basic Commands
 

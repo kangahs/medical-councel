@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Hours Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .status-section {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .status-active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-inactive {
+            background: #f44336;
+            color: white;
+        }
+
+        .duration-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .control-section {
+            padding: 30px;
+        }
+
+        .note-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1em;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .note-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-clock-in {
+            background: #4CAF50;
+        }
+
+        .btn-clock-in:hover:not(:disabled) {
+            background: #45a049;
+        }
+
+        .btn-clock-out {
+            background: #f44336;
+        }
+
+        .btn-clock-out:hover:not(:disabled) {
+            background: #da190b;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+        }
+
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+
+        .view-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .display-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .display-area {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        .session-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .session-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .session-card.active {
+            border-color: #4CAF50;
+            background: #f1f8f4;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .session-number {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .session-duration {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .session-info {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .session-note {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .summary-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .summary-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏰ Work Hours Tracker</h1>
+            <p>Track your working hours with ease</p>
+        </div>
+
+        <div class="status-section">
+            <div id="statusBadge" class="status-badge status-inactive">Not Clocked In</div>
+            <div id="statusMessage"></div>
+            <div id="durationDisplay" class="duration-display">00:00:00</div>
+        </div>
+
+        <div class="control-section">
+            <input type="text" id="noteInput" class="note-input" placeholder="Add a note (optional)...">
+
+            <div class="button-group">
+                <button id="clockInBtn" class="btn btn-clock-in" onclick="clockIn()">
+                    🟢 Clock In
+                </button>
+                <button id="clockOutBtn" class="btn btn-clock-out" onclick="clockOut()" disabled>
+                    🔴 Clock Out
+                </button>
+            </div>
+
+            <div class="view-buttons">
+                <button class="btn btn-secondary" onclick="viewSessions('all')">
+                    📋 All Sessions
+                </button>
+                <button class="btn btn-secondary" onclick="showSummary('today')">
+                    📅 Today
+                </button>
+                <button class="btn btn-secondary" onclick="showSummary('week')">
+                    📊 This Week
+                </button>
+                <button class="btn btn-secondary" onclick="showSummary('month')">
+                    📈 This Month
+                </button>
+            </div>
+        </div>
+
+        <div class="display-section">
+            <h2 style="margin-bottom: 20px; color: #667eea;">Information</h2>
+            <div id="displayArea" class="display-area">
+                <h3>Welcome to Work Hours Tracker! 👋</h3>
+                <p style="margin-top: 15px;">Click <strong>Clock In</strong> to start tracking your work time.</p>
+                <p>You can add optional notes before clocking in or out.</p>
+                <p style="margin-top: 15px;">Use the buttons above to view your sessions and summaries.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update status every second
+        setInterval(updateStatus, 1000);
+
+        // Initial status update
+        updateStatus();
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+
+                const statusBadge = document.getElementById('statusBadge');
+                const statusMessage = document.getElementById('statusMessage');
+                const durationDisplay = document.getElementById('durationDisplay');
+                const clockInBtn = document.getElementById('clockInBtn');
+                const clockOutBtn = document.getElementById('clockOutBtn');
+
+                if (data.active) {
+                    statusBadge.textContent = '✓ Currently Clocked In';
+                    statusBadge.className = 'status-badge status-active';
+                    statusMessage.textContent = data.message;
+                    durationDisplay.textContent = data.duration;
+                    clockInBtn.disabled = true;
+                    clockOutBtn.disabled = false;
+                } else {
+                    statusBadge.textContent = 'Currently Clocked Out';
+                    statusBadge.className = 'status-badge status-inactive';
+                    statusMessage.textContent = '';
+                    durationDisplay.textContent = '00:00:00';
+                    clockInBtn.disabled = false;
+                    clockOutBtn.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+
+        async function clockIn() {
+            const note = document.getElementById('noteInput').value;
+
+            try {
+                const response = await fetch('/api/clock_in', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note: note })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    document.getElementById('noteInput').value = '';
+                    updateStatus();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error clocking in: ' + error.message, 'error');
+            }
+        }
+
+        async function clockOut() {
+            const note = document.getElementById('noteInput').value;
+
+            try {
+                const response = await fetch('/api/clock_out', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note: note })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(data.message + ' (Duration: ' + data.duration + ')', 'success');
+                    document.getElementById('noteInput').value = '';
+                    updateStatus();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error clocking out: ' + error.message, 'error');
+            }
+        }
+
+        async function viewSessions(period) {
+            try {
+                const response = await fetch(`/api/sessions/${period}`);
+                const sessions = await response.json();
+
+                const displayArea = document.getElementById('displayArea');
+
+                if (sessions.length === 0) {
+                    displayArea.innerHTML = '<p>No sessions found for this period.</p>';
+                    return;
+                }
+
+                let html = '<h3>Work Sessions - ' + period.toUpperCase() + '</h3>';
+
+                sessions.forEach(session => {
+                    const activeClass = session.active ? 'active' : '';
+                    html += `
+                        <div class="session-card ${activeClass}">
+                            <div class="session-header">
+                                <span class="session-number">Session #${session.id}</span>
+                                <span class="session-duration">${session.duration}</span>
+                            </div>
+                            <div class="session-info">⏰ In: ${session.clock_in}</div>
+                            <div class="session-info">⏰ Out: ${session.clock_out}</div>
+                            ${session.note ? `<div class="session-note">📝 ${session.note}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                displayArea.innerHTML = html;
+            } catch (error) {
+                showMessage('Error loading sessions: ' + error.message, 'error');
+            }
+        }
+
+        async function showSummary(period) {
+            try {
+                const response = await fetch(`/api/summary/${period}`);
+                const summary = await response.json();
+
+                const displayArea = document.getElementById('displayArea');
+
+                let html = `
+                    <h3>Summary - ${period.toUpperCase()}</h3>
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <div class="summary-label">Total Sessions</div>
+                            <div class="summary-value">${summary.total_sessions}</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Completed</div>
+                            <div class="summary-value">${summary.completed_sessions}</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Active</div>
+                            <div class="summary-value">${summary.active_sessions}</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Total Hours</div>
+                            <div class="summary-value">${summary.total_hours}</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Avg per Session</div>
+                            <div class="summary-value">${summary.average_per_session}</div>
+                        </div>
+                    </div>
+                `;
+
+                displayArea.innerHTML = html;
+            } catch (error) {
+                showMessage('Error loading summary: ' + error.message, 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const displayArea = document.getElementById('displayArea');
+            const messageClass = type === 'success' ? 'message-success' : 'message-error';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${messageClass}`;
+            messageDiv.textContent = message;
+
+            displayArea.insertBefore(messageDiv, displayArea.firstChild);
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
